@@ -2,6 +2,7 @@
 
 <div align="center">
 English | [简体中文](README_CN.md)
+<div>
 
 <p align="center">
     <a href="https://arxiv.org/abs/2511.18333" target="_blank">
