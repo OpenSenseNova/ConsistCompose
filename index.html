@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ConsistCompose — Unified Multimodal Layout Control</title>
+<style>
+:root {
+  --bg: #080c14;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --border: rgba(255,255,255,0.08);
+  --blue: #60a5fa;
+  --pink: #fb72c3;
+  --violet: #a78bfa;
+  --green: #34d399;
+  --maxw: 1100px;
+  --radius: 16px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed; inset: 0; z-index: -1;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(96,165,250,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167,139,250,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(251,114,195,0.04) 0%, transparent 60%),
+    url("assets/logo.png");
+  background-size: auto, auto, auto, cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+body::after {
+  content: "";
+  position: fixed; inset: 0; z-index: -1;
+  background: linear-gradient(180deg,
+    rgba(8,12,20,0.82) 0%,
+    rgba(8,12,20,0.65) 40%,
+    rgba(8,12,20,0.80) 80%,
+    rgba(8,12,20,0.95) 100%);
+}
+
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(8,12,20,0.40);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: inherit;
+}
+.nav-brand img { width: 30px; height: 30px; border-radius: 7px; }
+.nav-brand-name { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 15px; font-weight: 700; color: #f1f5f9; }
+.nav-brand-sub { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 11px; color: var(--muted); margin-top: 1px; display: block; }
+.nav-links {
+  display: flex; align-items: center; gap: 0;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+.nav-link {
+  padding: 6px 14px; font-size: 13.5px; font-weight: 500;
+  color: #94a3b8; text-decoration: none;
+  position: relative; transition: color .2s;
+}
+.nav-link:hover { color: #e2e8f0; }
+.nav-link.active { color: #fff; font-weight: 600; }
+.nav-link.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 50%;
+  transform: translateX(-50%);
+  width: 20px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--violet));
+}
+
+section {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 24px 60px;
+  position: relative;
+}
+.container {
+  width: 100%; max-width: var(--maxw);
+}
+
+#hero {
+  text-align: center;
+  padding: 100px 24px 80px;
+  flex-direction: column;
+  gap: 0;
+}
+.hero-venue {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px; font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--violet);
+  margin-bottom: 20px;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.hero-venue::before, .hero-venue::after {
+  content: ''; display: inline-block;
+  width: 24px; height: 1px; background: var(--violet); opacity: .5;
+}
+.hero-title {
+  font-size: clamp(36px, 5.5vw, 68px);
+  font-weight: 700; line-height: 1.1;
+  letter-spacing: -.02em;
+  background: linear-gradient(135deg, #f1f5f9 20%, #a78bfa 60%, #60a5fa 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+.hero-subtitle {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(14px, 2vw, 18px);
+  color: #94a3b8; max-width: 700px; margin: 0 auto 32px;
+  font-weight: 400; line-height: 1.6;
+}
+.authors {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px; color: #cbd5e1;
+  margin-bottom: 6px; line-height: 1.8;
+}
+.authors a { color: var(--blue); text-decoration: none; }
+.authors a:hover { text-decoration: underline; }
+.affiliations {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px; color: var(--muted);
+  margin-bottom: 36px;
+}
+.hero-btns {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+  margin-bottom: 56px;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border-radius: 999px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px; font-weight: 600; text-decoration: none;
+  transition: all .2s; cursor: pointer; border: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #7c3aed);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(99,102,241,.35);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(99,102,241,.5); }
+.btn-outline {
+  background: rgba(255,255,255,0.05);
+  color: #cbd5e1; border: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+.btn-outline:hover { background: rgba(255,255,255,0.10); color: #fff; border-color: rgba(255,255,255,0.15); }
+
+.teaser {
+  width: 100%; max-width: 900px; margin: 0 auto;
+  border-radius: 20px; overflow: hidden;
+  border: 1px solid var(--border);
+  background: rgba(15,23,42,0.6);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 24px 80px rgba(0,0,0,.5);
+}
+.teaser img { width: 100%; display: block; }
+.teaser-caption {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px; color: var(--muted); text-align: center;
+  padding: 14px 24px; border-top: 1px solid var(--border);
+  line-height: 1.6;
+}
+
+.sec-label {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--violet);
+  margin-bottom: 12px;
+}
+.sec-title {
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 700; line-height: 1.15;
+  letter-spacing: -.02em; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+/* Inside flex containers (method, results), the wrapper div controls spacing via gap */
+#method .container .sec-title,
+#results .container .sec-title { margin-bottom: 0; }
+#method .container .sec-label,
+#results .container .sec-label { margin-bottom: 12px; }
+.sec-title::before {
+  content: ''; flex-shrink: 0;
+  width: 6px; height: 28px; border-radius: 6px;
+  background: linear-gradient(180deg, var(--pink), var(--violet));
+}
+
+.glass {
+  background: rgba(15,23,42,0.40);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.abstract-text {
+  font-size: clamp(15px, 1.5vw, 17px);
+  line-height: 1.85; color: #cbd5e1;
+  padding: 32px 36px;
+}
+.abstract-text strong { color: #e2e8f0; font-weight: 600; }
+.abstract-text em { color: var(--blue); font-style: normal; font-weight: 500; }
+
+.highlights {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-top: 40px;
+}
+.highlight-card { padding: 24px 28px; }
+.highlight-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+.highlight-title {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px;
+}
+.highlight-desc {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13.5px; color: var(--muted); line-height: 1.65;
+}
+
+#method .container { display: flex; flex-direction: column; gap: 20px; }
+.method-figure { width: 100%; border-radius: var(--radius); overflow: hidden; }
+.method-figure img { width: 100%; display: block; }
+.fig-placeholder {
+  width: 100%; aspect-ratio: 16/6;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15,23,42,0.5); color: var(--muted);
+  font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px;
+  flex-direction: column; gap: 10px;
+}
+.fig-caption {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px; color: var(--muted);
+  padding: 14px 20px; border-top: 1px solid var(--border);
+  line-height: 1.6; text-align: center;
+}
+.method-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 700px) { .method-cols { grid-template-columns: 1fr; } }
+.method-col { padding: 28px; }
+.method-col-title {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px; font-weight: 700;
+  color: var(--blue); margin-bottom: 10px; text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.method-col p {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px; color: #94a3b8; line-height: 1.7;
+}
+
+#results .container { display: flex; flex-direction: column; gap: 20px; }
+.results-desc {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px; color: #94a3b8; line-height: 1.7; max-width: 800px;
+}
+.table-wrap { overflow-x: auto; border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13.5px; }
+thead th {
+  padding: 12px 16px; text-align: left;
+  color: var(--muted); font-weight: 600; font-size: 12px;
+  letter-spacing: .06em; text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(15,23,42,0.6);
+}
+tbody td { padding: 11px 16px; color: #cbd5e1; border-bottom: 1px solid rgba(255,255,255,0.04); }
+tbody tr:hover td { background: rgba(255,255,255,0.025); }
+tbody tr:last-child td { border-bottom: none; }
+.td-model { font-weight: 600; color: #e2e8f0; }
+.td-ours { color: var(--green) !important; font-weight: 700; }
+.td-best { color: var(--blue); font-weight: 700; }
+.table-note { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12px; color: var(--muted); margin-top: 10px; padding: 0 4px; }
+
+#gallery-preview .container {
+  text-align: center; display: flex; flex-direction: column;
+  align-items: center; gap: 32px;
+}
+.gallery-grid-preview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; }
+@media (max-width: 700px) { .gallery-grid-preview { grid-template-columns: repeat(2, 1fr); } }
+.gallery-cell {
+  aspect-ratio: 1/1; border-radius: 12px;
+  background: rgba(15,23,42,0.5); border: 1px solid var(--border);
+  overflow: hidden; position: relative;
+}
+.gallery-cell img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
+.gallery-cell:hover img { transform: scale(1.05); }
+.gallery-cell-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px; flex-direction: column; gap: 6px;
+}
+
+#bibtex .container { max-width: 820px; }
+.bibtex-wrap { position: relative; }
+.bibtex-pre {
+  background: rgba(5,8,18,0.60); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px 28px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13.5px; line-height: 1.75; color: #e2e8f0;
+  white-space: pre-wrap; word-break: break-word; overflow: hidden;
+}
+.bibtex-copy {
+  position: absolute; top: 14px; right: 14px;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 7px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px; font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(30,41,59,0.80);
+  color: #94a3b8; cursor: pointer;
+  transition: all .15s; opacity: 0;
+  backdrop-filter: blur(8px);
+}
+.bibtex-wrap:hover .bibtex-copy { opacity: 1; }
+.bibtex-copy:hover { background: rgba(51,65,85,0.9); color: #e2e8f0; border-color: rgba(255,255,255,0.2); }
+.bibtex-copy.copied { background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.4); color: #4ade80; opacity: 1; }
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px; color: var(--muted);
+  background: rgba(8,12,20,0.50);
+  backdrop-filter: blur(20px);
+}
+footer a { color: var(--blue); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* ─── Capabilities ─── */
+.cap-nav {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0; margin: 28px 0 24px;
+}
+.cap-nav-pills {
+  display: flex; width: 100%;
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-top: none;
+  background: rgba(255,255,255,0.03);
+}
+.cap-tab {
+  flex: 1;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  padding: 11px 8px; border: none; border-right: 1px solid var(--border);
+  background: transparent; color: #64748b;
+  font-size: 13.5px; font-weight: 600; cursor: pointer;
+  transition: color .2s, background .2s;
+  white-space: nowrap; text-align: center;
+}
+.cap-tab:last-child { border-right: none; }
+.cap-tab:hover { color: #cbd5e1; background: rgba(255,255,255,0.05); }
+.cap-tab.active { color: #e2e8f0; background: rgba(96,165,250,0.08); }
+.cap-progress-wrap {
+  width: 100%; height: 3px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px 3px 0 0;
+  overflow: hidden; border: 1px solid var(--border); border-bottom: none;
+}
+.cap-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--violet));
+  width: 0%; transition: width .08s linear;
+}
+
+/* ── Panel container: all panels stacked in same grid cell ── */
+.cap-panels {
+  position: relative;
+}
+
+/* ── Ghost spacer: in-flow, invisible, holds container height via square img ── */
+.cap-panel-ghost {
+  display: grid; gap: 20px;
+  grid-template-columns: 55fr 45fr;
+  visibility: hidden;
+  pointer-events: none;
+}
+.cap-ghost-right { padding: 18px 22px; display: flex; flex-direction: column; gap: 10px; }
+.cap-ghost-left  { padding: 18px 22px; }
+.cap-ghost-label { height: 14px; flex-shrink: 0; }  /* mirrors .cap-output-label height */
+.cap-ghost-img   { width: 100%; aspect-ratio: 1 / 1; flex-shrink: 0; }
+
+/* ── Real panels: all absolute, overlay the ghost ── */
+.cap-panel {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: grid; gap: 20px;
+  grid-template-columns: 55fr 45fr;
+  align-items: stretch;
+  opacity: 0; pointer-events: none;
+  transition: opacity .35s ease;
+}
+.cap-panel.active { opacity: 1; pointer-events: auto; }
+
+@media (max-width: 768px) {
+  .cap-panel-ghost, .cap-panel { grid-template-columns: 1fr; }
+}
+
+/* ── Both cards: fill the absolute panel height ── */
+.cap-right, .cap-left {
+  padding: 18px 22px;
+  display: flex; flex-direction: column; gap: 10px;
+  height: 100%; min-height: 0;
+}
+
+/* ── Input image (single, Panel 1): flex:1 fills remaining left card space ── */
+.cap-input-img-single {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #0f172a;
+  position: relative;
+}
+.cap-input-img-single img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+/* ── Reference image pair (Panel 2) ── */
+.cap-ref-imgs { display: flex; gap: 10px; flex: 1; min-height: 0; }
+.cap-ref-item { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.cap-ref-thumb {
+  width: 100%; flex: 1; min-height: 0;
+  border-radius: 10px; border: 2px solid;
+  overflow: hidden; background: #0f172a;
+}
+.cap-ref-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── Panel 0: bbox visualizer — flex:1 fills left card, SVG centered with aspect ratio ── */
+.cap-bbox-preview {
+  flex: 1;
+  min-height: 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(5, 8, 20, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.cap-bbox-preview svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  /* preserveAspectRatio="xMidYMid meet" on the SVG element handles the rest */
+}
+
+.cap-input-label, .cap-output-label {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--violet); flex-shrink: 0;
+}
+.cap-output-label { color: var(--green); }
+.cap-prompt {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13.5px; line-height: 1.7; color: #94a3b8;
+  background: rgba(5,8,18,0.5); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px; flex-shrink: 0;
+}
+.bbox        { font-weight: 600; }
+.bbox.pink   { color: #fb72c3; }
+.bbox.green  { color: #34d399; }
+.bbox.blue   { color: #60a5fa; }
+.bbox.orange { color: #fb923c; }
+.bbox.violet { color: #a78bfa; }
+.cap-arrow-row { display: flex; align-items: center; flex-shrink: 0; }
+.cap-arrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+}
+.cap-arrow svg { color: var(--blue); flex-shrink: 0; }
+.cap-bbox-legend {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px; color: var(--muted);
+  display: flex; flex-wrap: wrap; gap: 5px; align-items: center; flex-shrink: 0;
+}
+.bbox-dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.bbox-dot.pink   { background: #fb72c3; }
+.bbox-dot.green  { background: #34d399; }
+.bbox-dot.blue   { background: #60a5fa; }
+.bbox-dot.orange { background: #fb923c; }
+.bbox-dot.violet { background: #a78bfa; }
+
+/* ── Output image wrap: fixed square, drives the row height ── */
+.cap-img-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;          /* square — this sets the right card height */
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border); background: #0f172a; position: relative;
+  flex-shrink: 0;
+}
+.cap-img-stack { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cap-img-stack img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.cap-img-clean { z-index: 1; }
+.cap-bbox-canvas {
+  position: absolute; inset: 0; z-index: 2;
+  width: 100%; height: 100%;
+  opacity: 1; transition: opacity 1.4s ease;
+  pointer-events: none;
+}
+.cap-bbox-canvas.hidden { opacity: 0; }
+.cap-ref-label { font-family: ui-sans-serif,system-ui,sans-serif; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 768px) {
+  .topnav { padding: 0 20px; }
+  .nav-links { display: none; }
+  section { padding: 80px 16px 48px; }
+  .abstract-text { padding: 20px; }
+}
+
+</style>
+</head>
+<body>
+
+<nav class="topnav" id="topnav">
+  <a class="nav-brand" href="#hero">
+    <img src="assets/logo.png" alt="ConsistCompose">
+    <div>
+      <span class="nav-brand-name">ConsistCompose</span>
+      <span class="nav-brand-sub">Project Page</span>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link active" href="#hero">Home</a>
+    <a class="nav-link" href="#capabilities">Capabilities</a>
+    <a class="nav-link" href="#abstract">Abstract</a>
+    <a class="nav-link" href="#method">Method</a>
+    <a class="nav-link" href="#results">Results</a>
+    <a class="nav-link" href="#gallery-preview">Gallery</a>
+    <a class="nav-link" href="#bibtex">BibTeX</a>
+  </div>
+</nav>
+
+<section id="hero">
+  <div style="width:100%;max-width:var(--maxw);display:flex;flex-direction:column;align-items:center;text-align:center;">
+    <div class="hero-venue reveal">CVPR 2026</div>
+    <h1 class="hero-title reveal">ConsistCompose</h1>
+    <p class="hero-subtitle reveal">Unified Multimodal Layout Control for Image Composition</p>
+    <p class="authors reveal">
+      Xuanke Shi&thinsp;<sup></sup>&ensp;
+      Boxuan Li&thinsp;<sup></sup>&ensp;
+      Xiaoyang Han&thinsp;<sup></sup>&ensp;
+      Zhongang Cai&thinsp;<sup></sup>&ensp;
+      Lei Yang&thinsp;<sup></sup>&ensp;
+      Dahua Lin&thinsp;<sup></sup>&ensp;
+      Quan Wang&thinsp;<sup></sup>
+    </p>
+    <p class="affiliations reveal">
+      <sup></sup>SenseTime Research&emsp;
+    </p>
+    <div class="hero-btns reveal">
+      <a href="https://arxiv.org/abs/2511.18333" target="_blank" class="btn btn-primary">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Paper
+      </a>
+      <a href="https://github.com/OpenSenseNova/ConsistCompose" target="_blank" class="btn btn-outline">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        Code
+      </a>
+      <a href="https://huggingface.co/sensenova/ConsistCompose-BAGEL-7B-MoT" target="_blank" class="btn btn-outline">🤗 Model</a>
+      <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" target="_blank" class="btn btn-outline">📂 Dataset</a>
+      <a href="https://a-yayaya.github.io/ConsistCompose3M/" target="_blank" class="btn btn-outline">🖼️ Gallery</a>
+    </div>
+  </div>
+</section>
+
+<section id="capabilities" style="padding:80px 24px 100px;">
+  <div style="width:100%;max-width:var(--maxw);">
+    <div class="sec-label reveal">Demonstrations</div>
+    <h2 class="sec-title reveal" style="margin-bottom:8px;">Capabilities</h2>
+    <div class="cap-nav reveal">
+      <div class="cap-progress-wrap">
+        <div class="cap-progress-bar" id="capProgress"></div>
+      </div>
+      <div class="cap-nav-pills">
+        <button class="cap-tab active" data-cap="0">Layout Control</button>
+        <button class="cap-tab" data-cap="1">Element Rearrangement</button>
+        <button class="cap-tab" data-cap="2">Multi-Instance Reference</button>
+      </div>
+    </div>
+
+    <div class="cap-panels">
+
+      <!-- ── Ghost spacer: mirrors right card structure exactly ── -->
+      <div class="cap-panel-ghost" aria-hidden="true">
+        <div class="cap-ghost-left"></div>
+        <div class="cap-ghost-right">
+          <div class="cap-ghost-label"></div>
+          <div class="cap-ghost-img"></div>
+        </div>
+      </div>
+
+      <!-- ── Panel 0: Layout Control (text-only — bbox visualizer fills left) ── -->
+      <div class="cap-panel active" data-panel="0">
+        <div class="cap-left glass">
+          <div class="cap-input-label">Text Prompt Input</div>
+
+          <!-- Bbox visualizer: decorative SVG showing layout control concept -->
+          <div class="cap-bbox-preview">
+            <svg viewBox="0 0 400 400" width="400" height="400" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+              <!-- subtle grid -->
+              <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                </pattern>
+              </defs>
+              <rect width="400" height="400" fill="url(#grid)"/>
+
+              <!-- door bbox (violet): y scaled *400/280 -->
+              <rect x="54" y="4" width="291" height="273" rx="4"
+                fill="rgba(167,139,250,0.07)" stroke="#a78bfa" stroke-width="1.8" stroke-dasharray="6 3"/>
+              <text x="61" y="20" font-family="monospace" font-size="11" fill="#a78bfa" opacity="0.9">door</text>
+
+              <!-- cat bbox (pink) -->
+              <rect x="43" y="119" width="199" height="229" rx="4"
+                fill="rgba(251,114,195,0.07)" stroke="#fb72c3" stroke-width="2"/>
+              <text x="50" y="135" font-family="monospace" font-size="11" fill="#fb72c3" opacity="0.9">cat</text>
+
+              <!-- floor bbox (orange) -->
+              <rect x="0" y="237" width="400" height="163" rx="4"
+                fill="rgba(251,146,60,0.06)" stroke="#fb923c" stroke-width="1.8" stroke-dasharray="4 3"/>
+              <text x="7" y="253" font-family="monospace" font-size="11" fill="#fb923c" opacity="0.9">floor</text>
+
+              <!-- paw 1 (green) -->
+              <rect x="199" y="227" width="27" height="30" rx="3"
+                fill="rgba(52,211,153,0.10)" stroke="#34d399" stroke-width="1.8"/>
+              <text x="200" y="222" font-family="monospace" font-size="10" fill="#34d399" opacity="0.9">paw 1</text>
+
+              <!-- paw 2 (blue) -->
+              <rect x="43" y="314" width="32" height="30" rx="3"
+                fill="rgba(96,165,250,0.10)" stroke="#60a5fa" stroke-width="1.8"/>
+              <text x="44" y="310" font-family="monospace" font-size="10" fill="#60a5fa" opacity="0.9">paw 2</text>
+
+              <!-- coordinate labels -->
+              <text x="200" y="390" font-family="monospace" font-size="10" fill="rgba(100,116,139,0.6)" text-anchor="middle">layout coordinates embedded in text tokens</text>
+            </svg>
+          </div>
+
+          <div class="cap-prompt">A cat <span class="bbox pink">&lt;bbox&gt;[0.109, 0.297, 0.607, 0.87]&lt;/bbox&gt;</span> has extended paw <span class="bbox green">&lt;bbox&gt;[0.497, 0.566, 0.564, 0.642]&lt;/bbox&gt;</span> and balancing paw <span class="bbox blue">&lt;bbox&gt;[0.108, 0.786, 0.187, 0.862]&lt;/bbox&gt;</span>. Dark floor <span class="bbox orange">&lt;bbox&gt;[0.0, 0.593, 1.0, 0.999]&lt;/bbox&gt;</span> with pebbles, a large door <span class="bbox violet">&lt;bbox&gt;[0.137, 0.001, 0.869, 0.684]&lt;/bbox&gt;</span> forms the backdrop.</div>
+          <div class="cap-arrow-row">
+            <div class="cap-arrow">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              Layout-grounded generation
+            </div>
+          </div>
+          <div class="cap-bbox-legend">
+            <span class="bbox-dot pink"></span>cat &nbsp;
+            <span class="bbox-dot green"></span>paw 1 &nbsp;
+            <span class="bbox-dot blue"></span>paw 2 &nbsp;
+            <span class="bbox-dot orange"></span>floor &nbsp;
+            <span class="bbox-dot violet"></span>door
+          </div>
+        </div>
+        <div class="cap-right glass">
+          <div class="cap-output-label">Generated Output</div>
+          <div class="cap-img-wrap" data-bboxes='[
+            {"coords":[0.109,0.297,0.607,0.87],"color":"#fb72c3"},
+            {"coords":[0.497,0.566,0.564,0.642],"color":"#34d399"},
+            {"coords":[0.108,0.786,0.187,0.862],"color":"#60a5fa"},
+            {"coords":[0.0,0.593,1.0,0.999],"color":"#fb923c"},
+            {"coords":[0.137,0.001,0.869,0.684],"color":"#a78bfa"}
+          ]'>
+            <div class="cap-img-stack">
+              <img class="cap-img-clean" src="assets/main_ani/1_ori.jpg" alt="Layout Control">
+              <canvas class="cap-bbox-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Panel 1: Element Rearrangement ── -->
+      <div class="cap-panel" data-panel="1">
+        <div class="cap-left glass">
+          <div class="cap-input-label">Image + Text Prompt Input</div>
+          <div class="cap-input-img-single">
+            <img src="assets/main_ani/2_input.png" alt="Input image">
+          </div>
+          <div class="cap-prompt">The mug <span class="bbox blue">&lt;bbox&gt;[0.382, 0.388, 0.651, 0.666]&lt;/bbox&gt;</span> from image1 sits on the right-middle of a rustic wooden table. A steamed dumpling <span class="bbox orange">&lt;bbox&gt;[0.128, 0.605, 0.356, 0.823]&lt;/bbox&gt;</span> from image1 rests on a plate. A red crab <span class="bbox green">&lt;bbox&gt;[0.421, 0.611, 0.817, 0.802]&lt;/bbox&gt;</span> from image1 crawls on the table.</div>
+          <div class="cap-arrow-row">
+            <div class="cap-arrow">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              Spatial rearrangement
+            </div>
+          </div>
+          <div class="cap-bbox-legend">
+            <span class="bbox-dot blue"></span>mug &nbsp;
+            <span class="bbox-dot orange"></span>dumpling &nbsp;
+            <span class="bbox-dot green"></span>red crab
+          </div>
+        </div>
+        <div class="cap-right glass">
+          <div class="cap-output-label">Generated Output</div>
+          <div class="cap-img-wrap" data-bboxes='[
+            {"coords":[0.382,0.388,0.651,0.666],"color":"#60a5fa"},
+            {"coords":[0.128,0.605,0.356,0.823],"color":"#fb923c"},
+            {"coords":[0.421,0.611,0.817,0.802],"color":"#34d399"}
+          ]'>
+            <div class="cap-img-stack">
+              <img class="cap-img-clean" src="assets/main_ani/2_ori.jpg" alt="Rearrangement">
+              <canvas class="cap-bbox-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Panel 2: Multi-Instance Reference ── -->
+      <div class="cap-panel" data-panel="2">
+        <div class="cap-left glass">
+          <div class="cap-input-label">Image + Text Prompt Input</div>
+          <div class="cap-ref-imgs">
+            <div class="cap-ref-item">
+              <div class="cap-ref-thumb" style="border-color:#fb72c3;">
+                <img src="assets/main_ani/3_REF1.png" alt="Reference 1">
+              </div>
+              <span class="cap-ref-label" style="color:#fb72c3;">image 1</span>
+            </div>
+            <div class="cap-ref-item">
+              <div class="cap-ref-thumb" style="border-color:#60a5fa;">
+                <img src="assets/main_ani/3_REF2.png" alt="Reference 2">
+              </div>
+              <span class="cap-ref-label" style="color:#60a5fa;">image 2</span>
+            </div>
+          </div>
+          <div class="cap-prompt">The piglet <span class="bbox pink">&lt;bbox&gt;[0.32, 0.269, 0.669, 0.82]&lt;/bbox&gt;</span> from image 1 nudges the brown briefcase <span class="bbox blue">&lt;bbox&gt;[0.353, 0.532, 0.714, 0.905]&lt;/bbox&gt;</span> from image 2 with its snout under the soft golden glow of a morning sun, standing on a cobblestone path.</div>
+          <div class="cap-arrow-row">
+            <div class="cap-arrow">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              Identity-consistent composition
+            </div>
+          </div>
+          <div class="cap-bbox-legend">
+            <span class="bbox-dot pink"></span>piglet (image 1) &nbsp;
+            <span class="bbox-dot blue"></span>briefcase (image 2)
+          </div>
+        </div>
+        <div class="cap-right glass">
+          <div class="cap-output-label">Generated Output</div>
+          <div class="cap-img-wrap" data-bboxes='[
+            {"coords":[0.32,0.269,0.669,0.82],"color":"#fb72c3"},
+            {"coords":[0.353,0.532,0.714,0.905],"color":"#60a5fa"}
+          ]'>
+            <div class="cap-img-stack">
+              <img class="cap-img-clean" src="assets/main_ani/3_ori.jpg" alt="Multi-instance">
+              <canvas class="cap-bbox-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end cap-panels -->
+  </div>
+</section>
+
+<section id="abstract">
+  <div class="container" style="max-width:var(--maxw);">
+    <div class="sec-label reveal">Abstract</div>
+    <h2 class="sec-title reveal">Overview</h2>
+    <div class="glass abstract-text reveal">
+      Unified multimodal models that couple visual understanding with image generation have advanced rapidly, yet most systems still focus on visual grounding — aligning language with image regions — while their generative counterpart, <em>linguistic-embedded layout-grounded generation (LELG)</em> for layout-controllable multi-instance generation, remains underexplored.
+      <br><br>
+      We present <strong>ConsistCompose</strong>, a unified multimodal framework that embeds layout coordinates directly into language prompts, enabling layout-controlled multi-instance image generation from Interleaved Image-Text within a single generative interface. We further construct <strong>ConsistCompose3M</strong>, a 3.4M multi-instance generation dataset with layout and identity annotations (2.6M text-guided and 0.8M image-guided data pairs).
+      <br><br>
+      Experiments on <strong>COCO-Position</strong> and <strong>MS-Bench</strong> show that ConsistCompose substantially improves spatial accuracy — achieving a <em>7.2% gain in layout IoU</em> and a <em>13.7% AP improvement</em> — while preserving identity fidelity and competitive general multimodal understanding.
+    </div>
+    <div class="highlights reveal">
+      <div class="glass highlight-card">
+        <span class="highlight-icon">🎯</span>
+        <div class="highlight-title">LELG Paradigm</div>
+        <div class="highlight-desc">Linguistic-embedded layout-grounded generation encodes spatial constraints as textual tokens, natively integrating layout control without task-specific branches.</div>
+      </div>
+      <div class="glass highlight-card">
+        <span class="highlight-icon">🔗</span>
+        <div class="highlight-title">Unified Framework</div>
+        <div class="highlight-desc">A single model jointly supports layout-grounded T2I synthesis, multi-reference identity-consistent composition, and general multimodal understanding.</div>
+      </div>
+      <div class="glass highlight-card">
+        <span class="highlight-icon">📦</span>
+        <div class="highlight-title">ConsistCompose3M</div>
+        <div class="highlight-desc">3.4M-sample multimodal dataset providing layout and identity supervision at scale for unified layout-aware multimodal training.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="method">
+  <div class="container">
+    <div>
+      <div class="sec-label reveal">Methodology</div>
+      <h2 class="sec-title reveal">Framework</h2>
+    </div>
+    <div class="glass method-figure reveal">
+      <img src="assets/framework.jpg" alt="ConsistCompose Framework Overview" style="width:100%;display:block;">
+      <div class="fig-caption">
+        <strong>Figure 1.</strong> Overview of the ConsistCompose framework. ConsistCompose adopts Bagel as its backbone with MoT architecture, featuring two Transformer experts for understanding and generation. The proposed LELG paradigm enables spatially controllable multi-instance generation by embedding explicit layout semantics into the linguistic stream.
+      </div>
+    </div>
+    <div class="method-cols reveal">
+      <div class="glass method-col">
+        <div class="method-col-title">Instance-Coordinate Binding</div>
+        <p>Layout constraints are encoded as succinct coordinate expressions in text, allowing the model to bind each subject identity and its designated spatial position through the shared token space governing both understanding and generation.</p>
+      </div>
+      <div class="glass method-col">
+        <div class="method-col-title">Coordinate-Aware CFG</div>
+        <p>A coordinate-aware classifier-free guidance mechanism further enhances spatial fidelity during sampling, without altering the backbone architecture or introducing task-specific layout-centric branches.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="results">
+  <div class="container">
+    <div>
+      <div class="sec-label reveal">Experiments</div>
+      <h2 class="sec-title reveal">Quantitative Results</h2>
+    </div>
+    <p class="results-desc reveal">
+      We evaluate on COCO-Position for layout controllability and MS-Bench for identity-consistent multi-reference generation. ConsistCompose establishes state-of-the-art performance on both benchmarks.
+    </p>
+    <div class="glass table-wrap reveal">
+      <table>
+        <thead>
+          <tr class="group">
+            <th rowspan="2" style="text-align:left;">Methods</th>
+            <th colspan="6" class="sepL">Instance Success Ratio (%) ↑</th>
+            <th colspan="6" class="sepL">Image Success Ratio (%) ↑</th>
+            <th colspan="4" class="sepL">Position Accuracy (%) ↑</th>
+          </tr>
+          <tr>
+            <!-- Instance Success -->
+            <th class="sepL">L<sub>2</sub></th><th>L<sub>3</sub></th><th>L<sub>4</sub></th><th>L<sub>5</sub></th><th>L<sub>6</sub></th><th>Avg</th>
+            <!-- Image Success -->
+            <th class="sepL">L<sub>2</sub></th><th>L<sub>3</sub></th><th>L<sub>4</sub></th><th>L<sub>5</sub></th><th>L<sub>6</sub></th><th>Avg</th>
+            <!-- Position Accuracy -->
+            <th class="sepL">mIoU</th><th>AP</th><th>AP<sub>50</sub></th><th>AP<sub>75</sub></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td class="method">GLIGEN</td>
+            <td class="sepL">89.1</td><td>86.3</td><td>82.0</td><td>79.6</td><td>81.6</td><td>82.6</td>
+            <td class="sepL">78.8</td><td>63.8</td><td>48.1</td><td>35.0</td><td>35.0</td><td>52.1</td>
+            <td class="sepL">69.0</td><td>40.5</td><td>75.9</td><td>39.1</td>
+          </tr>
+
+          <tr>
+            <td class="method">InstanceDiffusion</td>
+            <td class="sepL">94.1</td><td class="best">94.4</td><td>89.5</td><td>84.6</td><td>83.8</td><td>87.8</td>
+            <td class="sepL second">89.4</td><td>84.4</td><td>67.5</td><td>46.9</td><td>39.4</td><td>65.5</td>
+            <td class="sepL">78.1</td><td class="second">57.2</td><td class="second">83.6</td><td class="second">65.5</td>
+          </tr>
+
+          <tr>
+            <td class="method">MIGC++</td>
+            <td class="sepL second">94.1</td><td>92.1</td><td class="second">87.3</td><td class="second">84.1</td><td>83.4</td><td>86.8</td>
+            <td class="sepL best">89.4</td><td>78.1</td><td class="second">62.5</td><td>48.1</td><td class="second">38.8</td><td class="second">63.4</td>
+            <td class="sepL second">74.9</td><td class="best">48.3</td><td class="best">79.2</td><td class="best">52.6</td>
+          </tr>
+
+          <tr>
+            <td class="method">CreatiLayout</td>
+            <td class="sepL">81.9</td><td>76.3</td><td>73.4</td><td>73.5</td><td>71.2</td><td>74.0</td>
+            <td class="sepL">69.4</td><td>48.1</td><td>36.9</td><td>31.9</td><td>26.3</td><td>42.5</td>
+            <td class="sepL">64.9</td><td>32.4</td><td>61.1</td><td>31.6</td>
+          </tr>
+
+          <tr>
+            <td class="method">PlanGen</td>
+            <td class="sepL">85.3</td><td>84.2</td><td>83.8</td><td>80.9</td><td>81.2</td><td>82.5</td>
+            <td class="sepL">72.5</td><td>63.1</td><td>51.3</td><td>33.1</td><td>31.3</td><td>50.3</td>
+            <td class="sepL">66.2</td><td>31.9</td><td>74.0</td><td>21.5</td>
+          </tr>
+
+          <tr>
+            <td class="method" style="color: var(--green); font-weight: 800;">Ours</td>
+            <td class="sepL best">95.6</td><td class="second">94.2</td><td class="best">92.7</td><td class="best">90.6</td><td class="best">92.4</td><td class="best">92.6</td>
+            <td class="sepL best">91.9</td><td class="best">83.1</td><td class="best">73.1</td><td class="best">63.7</td><td class="best">68.8</td><td class="best">76.1</td>
+            <td class="sepL best">85.3</td><td class="second">70.9</td><td class="second">89.1</td><td class="second">76.9</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="gallery-preview">
+  <div class="container" style="display:flex;flex-direction:column;align-items:center;gap:32px;text-align:center;">
+    <div style="width:100%;">
+      <div class="sec-label reveal">Dataset</div>
+      <h2 class="sec-title reveal" style="justify-content:center;">ConsistCompose3M Gallery</h2>
+      <p class="results-desc reveal" style="margin:0 auto;text-align:center;">
+        3.4M samples spanning layout-grounded text-to-image, single-reference, and multi-reference composition tasks.
+      </p>
+    </div>
+    <div class="gallery-grid-preview reveal" style="width:100%;">
+
+      <div class="glass gallery-cell">
+        <img src="assets/Gallery/001_output.jpg" alt="Sample 1">
+      </div>
+
+      <div class="glass gallery-cell">
+        <img src="assets/Gallery/000098_info_output_annotated.jpg" alt="Sample 2">
+      </div>
+
+      <div class="glass gallery-cell">
+        <img src="assets/Gallery/346_output.jpg" alt="Sample 3">
+      </div>
+
+      <div class="glass gallery-cell">
+        <img src="assets/Gallery/sa_4110138.jpg" alt="Sample 4">
+      </div>
+
+    </div>
+    <a href="index.html" class="btn btn-primary reveal">View Full Gallery →</a>
+  </div>
+</section>
+
+<section id="bibtex">
+  <div class="container" style="max-width:820px;">
+    <div class="sec-label reveal">Citation</div>
+    <h2 class="sec-title reveal">BibTeX</h2>
+    <p style="font-family:ui-sans-serif,system-ui,sans-serif;font-size:14px;color:var(--muted);margin-bottom:20px;" class="reveal">If you find our work useful, please cite:</p>
+    <div class="bibtex-wrap reveal">
+      <button class="bibtex-copy" id="copyBtn">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+      <pre class="bibtex-pre" id="bibtexContent">@article{shi2025consistcompose,
+  title={ConsistCompose: Unified Multimodal Layout Control for Image Composition},
+  author={Shi, Xuanke and Li, Boxuan and Han, Xiaoyang and Cai, Zhongang and
+          Yang, Lei and Lin, Dahua and Wang, Quan},
+  journal={arXiv preprint arXiv:2511.18333},
+  year={2025}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <strong style="color:#e2e8f0;">ConsistCompose</strong> &nbsp;·&nbsp;
+    SenseTime Research &nbsp;·&nbsp; 2026
+  </div>
+  <div style="display:flex;gap:20px;align-items:center;">
+    <a href="https://arxiv.org/abs/2511.18333" target="_blank">Paper</a>
+    <a href="https://github.com/OpenSenseNova/ConsistCompose" target="_blank">Code</a>
+    <a href="https://a-yayaya.github.io/ConsistCompose3M/" target="_blank">Gallery</a>
+  </div>
+</footer>
+
+<script>
+document.getElementById('hero').addEventListener('wheel', function(e) {
+  if (e.deltaY > 0) {
+    e.preventDefault();
+    document.getElementById('capabilities').scrollIntoView({ behavior: 'smooth' });
+  }
+}, { passive: false });
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => observer.observe(s));
+
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      e.target.style.transitionDelay = (i % 4) * 80 + 'ms';
+      e.target.classList.add('visible');
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => revealObs.observe(el));
+
+/* ── Capabilities: canvas bbox drawing ── */
+(function() {
+  const DURATION  = 6000;
+  const BOX_HOLD  = 2000;
+  const LINE_W    = 3;
+  const CORNER_R  = 6;
+
+  const tabs    = Array.from(document.querySelectorAll('.cap-tab'));
+  const panels  = Array.from(document.querySelectorAll('.cap-panel'));
+  const progress = document.getElementById('capProgress');
+  if (!tabs.length) return;
+
+  let current = 0, startTime = null, raf = null;
+
+  function drawBboxes(wrap) {
+    const canvas = wrap.querySelector('.cap-bbox-canvas');
+    const img    = wrap.querySelector('.cap-img-clean');
+    if (!canvas || !img) return;
+    const bboxes = JSON.parse(wrap.dataset.bboxes || '[]');
+    if (!bboxes.length) return;
+
+    function render() {
+      const W = wrap.offsetWidth, H = wrap.offsetHeight;
+      if (!W || !H) { requestAnimationFrame(render); return; }
+      canvas.width  = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, W, H);
+      bboxes.forEach(({ coords, color }) => {
+        const [x1, y1, x2, y2] = coords;
+        const px = x1 * W, py = y1 * H, pw = (x2 - x1) * W, ph = (y2 - y1) * H;
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = LINE_W;
+        ctx.shadowColor = color;
+        ctx.shadowBlur  = 6;
+        ctx.beginPath();
+        ctx.roundRect(px, py, pw, ph, CORNER_R);
+        ctx.stroke();
+      });
+    }
+    render();
+  }
+
+  function showPanel(idx) {
+    tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
+    panels.forEach((p, i) => {
+      p.classList.toggle('active', i === idx);
+      p.querySelectorAll('.cap-bbox-canvas').forEach(c => c.classList.remove('hidden'));
+    });
+    current = idx;
+
+    const panel = panels[idx];
+    panel.querySelectorAll('.cap-img-wrap[data-bboxes]').forEach(drawBboxes);
+
+    clearTimeout(panel._boxTimer);
+    panel._boxTimer = setTimeout(() => {
+      panel.querySelectorAll('.cap-bbox-canvas').forEach(c => c.classList.add('hidden'));
+    }, BOX_HOLD);
+  }
+
+  function startProgress() {
+    cancelAnimationFrame(raf);
+    startTime = performance.now();
+    function tick(now) {
+      const elapsed = now - startTime;
+      progress.style.width = Math.min((elapsed / DURATION) * 100, 100) + '%';
+      if (elapsed < DURATION) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        showPanel((current + 1) % tabs.length);
+        startProgress();
+      }
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => { showPanel(i); startProgress(); });
+  });
+
+  window.addEventListener('resize', () => {
+    const panel = panels[current];
+    if (panel) panel.querySelectorAll('.cap-img-wrap[data-bboxes]').forEach(drawBboxes);
+  });
+
+  showPanel(0);
+  startProgress();
+})();
+
+document.getElementById('copyBtn').addEventListener('click', function() {
+  navigator.clipboard.writeText(document.getElementById('bibtexContent').innerText).then(() => {
+    this.textContent = '✓ Copied!';
+    this.classList.add('copied');
+    setTimeout(() => {
+      this.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy`;
+      this.classList.remove('copied');
+    }, 2000);
+  });
+});
+</script>
+</body>
+</html>
