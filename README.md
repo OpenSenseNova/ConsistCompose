@@ -8,7 +8,7 @@
     <a href="https://arxiv.org/abs/2511.18333" target="_blank">
         <img alt="arXiv" src="https://img.shields.io/badge/ConsistCompose-Paper-red?logo=arxiv" height="20" />
     </a>
-    <a href="https://sensenova.github.io/ConsistCompose/" target="_blank">
+    <a href="https://opensensenova.github.io/ConsistCompose/" target="_blank">
         <img alt="Project Page" src="https://img.shields.io/badge/Project%20Page-ConsistCompose-blue" height="20" />
     </a>
     <a href="https://huggingface.co/sensenova/ConsistCompose-BAGEL-7B-MoT" target="_blank">
