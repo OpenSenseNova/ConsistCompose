@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href="README_zh.md">简体中文</a> | <a href="README.md">English</a>
-<div>
+</div>
 
 <p align="center">
     <a href="https://arxiv.org/abs/2511.18333" target="_blank">
@@ -21,7 +21,6 @@
         <img alt="GitHub" src="https://img.shields.io/badge/GitHub-代码-100000?style=flat-square&logo=github&logoColor=white" height="20" />
     </a>
 </p>
-</div>
 
 ## 概述
 ConsistCompose 是一款面向**布局可控多实例图像合成**的新型统一多模态框架。该框架解决了现有多模态模型的核心痛点——多数模型虽擅长视觉定位（将语言与图像区域对齐），但在生成任务中缺乏对空间布局的精准控制能力。

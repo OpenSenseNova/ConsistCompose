@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href="README.md">English</a> | <a href="README_CN.md">简体中文</a>
-<div>
+</div>
 
 <p align="center">
     <a href="https://arxiv.org/abs/2511.18333" target="_blank">
@@ -21,7 +21,6 @@
         <img alt="GitHub" src="https://img.shields.io/badge/GitHub-Code-100000?style=flat-square&logo=github&logoColor=white" height="20" />
     </a>
 </p>
-</div>
 
 ## Overview
 ConsistCompose is a novel **unified multimodal framework** designed for layout-controllable multi-instance image composition. It addresses a critical gap in existing multimodal models—while most systems excel at visual grounding (aligning language with image regions), they lack precise control over spatial layout in generative tasks. 
