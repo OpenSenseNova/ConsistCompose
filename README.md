@@ -1,7 +1,7 @@
 # ConsistCompose: Unified Multimodal Layout Control for Image Composition
 
 <div align="center">
-English | [简体中文](README_CN.md)
+  <a href="README.md">English</a> | <a href="README_CN.md">简体中文</a>
 <div>
 
 <p align="center">
