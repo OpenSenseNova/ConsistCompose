@@ -127,22 +127,6 @@ dataset = load_dataset("sensenova/ConsistCompose3M", split="train")
 t2i_dataset = load_dataset("sensenova/ConsistCompose3M", data_files="jsonl_extended/layout_t2i/*.jsonl")
 ```
 
-<!-- ## Evaluation
-To reproduce benchmark results, use the official evaluation pipeline:
-```bash
-# Install EASI evaluation suite
-git clone git@github.com/EvolvingLMMs-Lab/EASI.git
-cd EASI && pip install -e .
-
-# Run layout control evaluation
-python evaluate.py \
-  --model consistcompose \
-  --model_path sensenova/ConsistCompose-BAGEL-7B-MoT \
-  --benchmark coco_position,ms_bench,dreambench \
-  --output_path results/consistcompose_evaluation.json \
-  --num_samples 1000
-``` -->
-
 ## 🖊️ Citation
 If you use ConsistCompose, ConsistCompose3M, or related resources in your research, please cite:
 ```bib
