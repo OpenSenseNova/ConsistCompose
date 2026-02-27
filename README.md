@@ -16,9 +16,6 @@ English | [简体中文](README_CN.md)
     <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" target="_blank">
         <img alt="Dataset" src="https://img.shields.io/badge/HuggingFace-Dataset-blueviolet" height="20" />
     </a>
-    <a href="https://modelscope.cn/collections/SenseNova/consistcompose-models" target="_blank">
-        <img alt="ModelScope" src="https://img.shields.io/badge/🤖 ModelScope-Models-blue" height="20" />
-    </a>
     <a href="https://github.com/OpenSenseNova/ConsistCompose" target="_blank">
         <img alt="GitHub" src="https://img.shields.io/badge/GitHub-Code-100000?style=flat-square&logo=github&logoColor=white" height="20" />
     </a>

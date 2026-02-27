@@ -16,9 +16,6 @@
     <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" target="_blank">
         <img alt="数据集" src="https://img.shields.io/badge/HuggingFace-数据集-blueviolet" height="20" />
     </a>
-    <a href="https://modelscope.cn/collections/SenseNova/consistcompose-models" target="_blank">
-        <img alt="ModelScope" src="https://img.shields.io/badge/🤖 ModelScope-模型-blue" height="20" />
-    </a>
     <a href="https://github.com/OpenSenseNova/ConsistCompose" target="_blank">
         <img alt="GitHub" src="https://img.shields.io/badge/GitHub-代码-100000?style=flat-square&logo=github&logoColor=white" height="20" />
     </a>
