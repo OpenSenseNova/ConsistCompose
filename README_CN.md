@@ -39,42 +39,243 @@ ConsistCompose 在布局控制基准测试中达到业界领先性能，同时�
 ## 📊 基准测试结果
 
 ### 1. COCO-Position（布局控制）
-| 方法 | 实例成功率（平均） | 图像成功率（平均） | mIoU | AP | AP50 | AP75 |
-|------|--------------------|--------------------|------|----|------|------|
-| GLIGEN | 82.6% | 52.1% | 69.0 | 40.5 | 75.9 | 39.1 |
-| InstanceDiffusion | 87.8% | 65.5% | 78.1 | 57.2 | 83.6 | 65.5 |
-| MIGC++ | 86.8% | 63.4% | 74.9 | 48.3 | 79.2 | 52.6 |
-| CreatiLayout | 74.0% | 42.5% | 64.9 | 32.4 | 61.1 | 31.6 |
-| PlanGen | 82.5% | 50.3% | 66.2 | 31.9 | 74.0 | 21.5 |
-| **Ours (ConsistCompose)** | **92.6%** | **76.1%** | **85.3** | **70.9** | **89.1** | **76.9** |
+<table style="width: 100%; text-align: center; border-collapse: collapse;">
+<thead>
+<tr style="text-align: center;">
+  <th>方法</th>
+  <th>实例成功率（平均）</th>
+  <th>图像成功率（平均）</th>
+  <th>mIoU</th>
+  <th>AP</th>
+  <th>AP50</th>
+  <th>AP75</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>GLIGEN</td>
+  <td>82.6%</td>
+  <td>52.1%</td>
+  <td>69.0</td>
+  <td>40.5</td>
+  <td>75.9</td>
+  <td>39.1</td>
+</tr>
+<tr>
+  <td>InstanceDiffusion</td>
+  <td>87.8%</td>
+  <td>65.5%</td>
+  <td>78.1</td>
+  <td>57.2</td>
+  <td>83.6</td>
+  <td>65.5</td>
+</tr>
+<tr>
+  <td>MIGC++</td>
+  <td>86.8%</td>
+  <td>63.4%</td>
+  <td>74.9</td>
+  <td>48.3</td>
+  <td>79.2</td>
+  <td>52.6</td>
+</tr>
+<tr>
+  <td>CreatiLayout</td>
+  <td>74.0%</td>
+  <td>42.5%</td>
+  <td>64.9</td>
+  <td>32.4</td>
+  <td>61.1</td>
+  <td>31.6</td>
+</tr>
+<tr>
+  <td>PlanGen</td>
+  <td>82.5%</td>
+  <td>50.3%</td>
+  <td>66.2</td>
+  <td>31.9</td>
+  <td>74.0</td>
+  <td>21.5</td>
+</tr>
+<tr>
+  <td><b>Ours (ConsistCompose)</b></td>
+  <td><b>92.6%</b></td>
+  <td><b>76.1%</b></td>
+  <td><b>85.3</b></td>
+  <td><b>70.9</b></td>
+  <td><b>89.1</b></td>
+  <td><b>76.9</b></td>
+</tr>
+</tbody>
+</table>
 
 > 相较于当前最优基线方法，mIoU 提升 7.2%，AP 提升 13.7%
 
+---
+
 ### 2. MS-Bench & MS-Bench-Random
-| 方法 | MS-Bench | | | | MS-Bench-Random | | | |
-|------|----------|------|------|----|----------------|------|------|----|
-|      | CLIP-T | DINO | mIoU | AP | CLIP-T | DINO | mIoU | AP |
-| GLIGEN | 0.309 | 0.454 | 0.868 | 0.751 | 0.312 | 0.431 | 0.858 | 0.722 |
-| MS-Diffusion | 0.336 | 0.555 | 0.466 | 0.108 | 0.334 | 0.544 | 0.464 | 0.105 |
-| MUSE | 0.320 | 0.619 | 0.698 | 0.352 | 0.321 | 0.607 | 0.673 | 0.303 |
-| **Ours (ConsistCompose)** | **0.333** | **0.660** | **0.889** | **0.789** | **0.334** | **0.630** | **0.878** | **0.756** |
+<table style="width: 100%; text-align: center; border-collapse: collapse;">
+<thead>
+<tr>
+  <th rowspan="2" style="text-align: center;">方法</th>
+  <th colspan="4" style="text-align: center;">MS-Bench</th>
+  <th colspan="4" style="text-align: center;">MS-Bench-Random</th>
+</tr>
+<tr>
+  <th style="text-align: center;">CLIP-T</th>
+  <th style="text-align: center;">DINO</th>
+  <th style="text-align: center;">mIoU</th>
+  <th style="text-align: center;">AP</th>
+  <th style="text-align: center;">CLIP-T</th>
+  <th style="text-align: center;">DINO</th>
+  <th style="text-align: center;">mIoU</th>
+  <th style="text-align: center;">AP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>GLIGEN</td>
+  <td>0.309</td>
+  <td>0.454</td>
+  <td>0.868</td>
+  <td>0.751</td>
+  <td>0.312</td>
+  <td>0.431</td>
+  <td>0.858</td>
+  <td>0.722</td>
+</tr>
+<tr>
+  <td>MS-Diffusion</td>
+  <td>0.336</td>
+  <td>0.555</td>
+  <td>0.466</td>
+  <td>0.108</td>
+  <td>0.334</td>
+  <td>0.544</td>
+  <td>0.464</td>
+  <td>0.105</td>
+</tr>
+<tr>
+  <td>MUSE</td>
+  <td>0.320</td>
+  <td>0.619</td>
+  <td>0.698</td>
+  <td>0.352</td>
+  <td>0.321</td>
+  <td>0.607</td>
+  <td>0.673</td>
+  <td>0.303</td>
+</tr>
+<tr>
+  <td><b>Ours (ConsistCompose)</b></td>
+  <td><b>0.333</b></td>
+  <td><b>0.660</b></td>
+  <td><b>0.889</b></td>
+  <td><b>0.789</b></td>
+  <td><b>0.334</b></td>
+  <td><b>0.630</b></td>
+  <td><b>0.878</b></td>
+  <td><b>0.756</b></td>
+</tr>
+</tbody>
+</table>
+
+---
 
 ### 3. 通用多模态能力
-| 模型 | MMBench | MMMU | GenEval | GEdit |
-|------|---------|------|---------|-------|
-| Bagel Base | 81.4 | 46.4 | 0.86 | 6.68 |
-| Ours (无坐标) | 81.5 | 39.4 | 0.88 | 6.23 |
-| Ours (有坐标) | 81.4 | 42.3 | 0.88 | 6.31 |
+<table style="width: 100%; text-align: center; border-collapse: collapse;">
+<thead>
+<tr style="text-align: center;">
+  <th>模型</th>
+  <th>MMBench</th>
+  <th>MMMU</th>
+  <th>GenEval</th>
+  <th>GEdit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Bagel Base</td>
+  <td>81.4</td>
+  <td>46.4</td>
+  <td>0.86</td>
+  <td>6.68</td>
+</tr>
+<tr>
+  <td>Ours (无坐标)</td>
+  <td>81.5</td>
+  <td>39.4</td>
+  <td>0.88</td>
+  <td>6.23</td>
+</tr>
+<tr>
+  <td>Ours (有坐标)</td>
+  <td>81.4</td>
+  <td>42.3</td>
+  <td>0.88</td>
+  <td>6.31</td>
+</tr>
+</tbody>
+</table>
+
+---
 
 ### 4. DreamBench（身份保留）
-| 方法 | Single | | | Multi | | |
-|------|--------|--------|--------|-------|-------|-------|
-|      | DINO | CLIP-I | CLIP-T | DINO | CLIP-I | CLIP-T |
-| UNO | 0.661 | 0.796 | 0.304 | 0.491 | 0.715 | 0.323 |
-| OmniGen | 0.554 | 0.746 | 0.322 | 0.441 | 0.692 | 0.341 |
-| OmniGen2 | 0.671 | 0.791 | 0.312 | 0.459 | 0.698 | 0.333 |
-| **Ours (ConsistCompose)** | **0.677** | **0.792** | **0.314** | **0.506** | **0.703** | **0.335** |
-
+<table style="width: 100%; text-align: center; border-collapse: collapse;">
+<thead>
+<tr>
+  <th rowspan="2" style="text-align: center;">方法</th>
+  <th colspan="3" style="text-align: center;">Single</th>
+  <th colspan="3" style="text-align: center;">Multi</th>
+</tr>
+<tr>
+  <th style="text-align: center;">DINO</th>
+  <th style="text-align: center;">CLIP-I</th>
+  <th style="text-align: center;">CLIP-T</th>
+  <th style="text-align: center;">DINO</th>
+  <th style="text-align: center;">CLIP-I</th>
+  <th style="text-align: center;">CLIP-T</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>UNO</td>
+  <td>0.661</td>
+  <td>0.796</td>
+  <td>0.304</td>
+  <td>0.491</td>
+  <td>0.715</td>
+  <td>0.323</td>
+</tr>
+<tr>
+  <td>OmniGen</td>
+  <td>0.554</td>
+  <td>0.746</td>
+  <td>0.322</td>
+  <td>0.441</td>
+  <td>0.692</td>
+  <td>0.341</td>
+</tr>
+<tr>
+  <td>OmniGen2</td>
+  <td>0.671</td>
+  <td>0.791</td>
+  <td>0.312</td>
+  <td>0.459</td>
+  <td>0.698</td>
+  <td>0.333</td>
+</tr>
+<tr>
+  <td><b>Ours (ConsistCompose)</b></td>
+  <td><b>0.677</b></td>
+  <td><b>0.792</b></td>
+  <td><b>0.314</b></td>
+  <td><b>0.506</b></td>
+  <td><b>0.703</b></td>
+  <td><b>0.335</b></td>
+</tr>
+</tbody>
+</table>
 ## 🛠️ 快速开始
 
 ### 环境安装
