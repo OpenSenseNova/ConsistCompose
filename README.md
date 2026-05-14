@@ -25,7 +25,7 @@
 ## Overview
 ConsistCompose is a novel **unified multimodal framework** designed for layout-controllable multi-instance image composition. It addresses a critical gap in existing multimodal models—while most systems excel at visual grounding (aligning language with image regions), they lack precise control over spatial layout in generative tasks. 
 
-Built upon the unified understanding and generation architecture of BAGEL and enhanced by SenseNova-SI's spatial intelligence, ConsistCompose introduces **Linguistic-Embedded Layout-Grounded Generation (LELG)**. This paradigm embeds layout coordinates directly into language prompts as textual tokens, eliminating the need for specialized spatial encoders or task-specific branches. To enable large-scale training, we construct **ConsistCompose3M** (3.4M samples), a high-quality dataset with layout and identity annotations that provides structured spatial-semantic supervision.
+Built upon the unified understanding and generation architecture of BAGEL, ConsistCompose introduces **Linguistic-Embedded Layout-Grounded Generation (LELG)**. This paradigm embeds layout coordinates directly into language prompts as textual tokens, eliminating the need for specialized spatial encoders or task-specific branches. To enable large-scale training, we construct **ConsistCompose3M** (3.4M samples), a high-quality dataset with layout and identity annotations that provides structured spatial-semantic supervision.
 
 ConsistCompose achieves state-of-the-art performance on layout control benchmarks while preserving strong general multimodal capabilities, establishing a principled solution for precise, flexible image composition.
 
