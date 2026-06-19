@@ -326,14 +326,13 @@ t2i_dataset = load_dataset("sensenova/ConsistCompose3M", data_files="jsonl_exten
 ## 🖊️ Citation
 If you use ConsistCompose, ConsistCompose3M, or related resources in your research, please cite:
 ```bib
-@misc{shi2026consistcomposeunifiedmultimodallayout,
-      title={ConsistCompose: Unified Multimodal Layout Control for Image Composition}, 
-      author={Xuanke Shi and Boxuan Li and Xiaoyang Han and Zhongang Cai and Lei Yang and Quan Wang and Dahua Lin},
-      year={2026},
-      eprint={2511.18333},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2511.18333}, 
+@InProceedings{Shi_2026_CVPR,
+    author    = {Shi, Xuanke and Li, Boxuan and Han, Xiaoyang and Cai, Zhongang and Yang, Lei and Wang, Quan and Lin, Dahua},
+    title     = {ConsistCompose: Unified Multimodal Layout Control for Image Composition},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2026},
+    pages     = {495-505}
 }
 ```
 
